@@ -1,9 +1,3 @@
-[SF-Doc-MD] Content script loaded and ready.
-content.bundle.js:1673 [SF-Doc-MD] Starting extraction...
-content.bundle.js:1186 [SF-Doc-MD] Success via Tier 1 (Deep Flattening)
-content.bundle.js:1699 [SF-Doc-MD] Extraction complete.
-
-
 ---
 title: "Place Sales Transaction (POST) | Revenue Cloud Developer Guide | Salesforce Developers"
 url: "https://developer.salesforce.com/docs/atlas.en-us.revenue_lifecycle_management_dev_guide.meta/revenue_lifecycle_management_dev_guide/connect_resources_place_sales_transaction.htm"
