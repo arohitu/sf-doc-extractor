@@ -1,11 +1,56 @@
-[SF-Doc-MD] Content script loaded and ready.
-content.bundle.js:1641 [SF-Doc-MD] Starting extraction...
-content.bundle.js:1205 [SF-Doc-MD] Success via Tier 3 (Heuristic)
-content.bundle.js:1667 [SF-Doc-MD] Extraction complete.
-
 ---
 title: "Place Sales Transaction (POST) | Revenue Cloud Developer Guide | Salesforce Developers"
 url: "https://developer.salesforce.com/docs/atlas.en-us.revenue_lifecycle_management_dev_guide.meta/revenue_lifecycle_management_dev_guide/connect_resources_place_sales_transaction.htm"
-fetched_at: "2025-11-24T21:27:35.482Z"
+fetched_at: "2025-11-24T21:44:37.152Z"
 ---
 
+     
+
+![Salesforce](https://a.sfdcstatic.com/digital/one-trust/core/stable/consent/8e783e8c-0ad0-475d-8fca-4a03afa0a02a/01938ba0-2bc1-7c9a-bc0e-70841d03b5b9/logos/ddb906c9-f57b-40fc-85a1-c8bcbc371b0d/6a33a761-886e-4860-8e17-abc0832f7a62/corporate_logo_big.png)
+
+## Cookie Consent Manager
+
+*   ### General Information
+    
+    #### General Information
+    
+    We use three kinds of cookies on our websites: required, functional, and advertising. You can choose whether functional and advertising cookies apply. Click on the different cookie categories to find out more about each category and to change the default settings.  
+    [Privacy Statement](https://www.salesforce.com/company/privacy/full_privacy/)
+    
+*   ### Required Cookies
+    
+    #### Required Cookies
+    
+    Always Active
+    
+    Required cookies are necessary for basic website functionality. Some examples include: session cookies needed to transmit the website, authentication cookies, and security cookies.
+    
+*   ### Functional Cookies
+    
+    #### Functional Cookies
+    
+    Functional Cookies
+    
+    Functional cookies enhance functions, performance, and services on the website. Some examples include: cookies used to analyze site traffic, cookies used for market research, and cookies used to display advertising that is not directed to a particular individual.
+    
+*   ### Advertising Cookies
+    
+    #### Advertising Cookies
+    
+    Advertising Cookies
+    
+    Advertising cookies track activity across websites in order to understand a viewer’s interests, and direct them specific marketing. Some examples include: cookies used for remarketing, or interest-based advertising.
+    
+
+Consent Leg.Interest
+
+checkbox label label
+
+checkbox label label
+
+checkbox label label
+
+checkbox label label
+
+
+ FOUND IT at depth 0
