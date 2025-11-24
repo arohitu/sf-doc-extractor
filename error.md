@@ -1,7 +1,7 @@
 ---
 title: "Place Sales Transaction (POST) | Revenue Cloud Developer Guide | Salesforce Developers"
 url: "https://developer.salesforce.com/docs/atlas.en-us.revenue_lifecycle_management_dev_guide.meta/revenue_lifecycle_management_dev_guide/connect_resources_place_sales_transaction.htm"
-fetched_at: "2025-11-24T22:02:52.634Z"
+fetched_at: "2025-11-24T22:15:28.402Z"
 ---
 
 # Place Sales Transaction (POST)
@@ -461,43 +461,32 @@ Properties
 
 | Name | Type | Description | Required or Optional | Available Version |
 | --- | --- | --- | --- | --- |
-| catalogRates​Pref | String | Rate card entries defined in the catalog that must be fetched for sales items with usage-based pricing during the creation of the sales transaction. Valid values are:
-*   Fetch—Retrieves the rate card entries defined in the catalog for sales items during the creation of the sales transaction.
-*   Skip—Skips the retrieval of rate card entries for sales items during the creation of the sales transaction.
-    
-    The default value is Skip.
-    
-
+| catalogRates​Pref | String | Rate card entries defined in the catalog that must be fetched for sales items with usage-based pricing during the creation of the sales transaction. Valid values are: • Fetch—Retrieves the rate card entries defined in the catalog for sales items during the creation of the sales transaction.  
+• Skip—Skips the retrieval of rate card entries for sales items during the creation of the sales transaction.The default value is Skip.  
+  
+  
 This property is available when the Usage-Based Selling feature is enabled. | Optional | 63.0 |
 | configuration​Pref | [Configurator Preference Input](https://developer.salesforce.com/docs/atlas.en-us.revenue_lifecycle_management_dev_guide.meta/revenue_lifecycle_management_dev_guide/connect_requests_configurator_preference_input.htm "Input representation of the configuration preference for the place sales transaction request.") | Configuration preference during the quote process. These preferences ensure that quotes are defined as per the requirement. | Optional | 63.0 |
 | contextDetails | [Context Input](https://developer.salesforce.com/docs/atlas.en-us.revenue_lifecycle_management_dev_guide.meta/revenue_lifecycle_management_dev_guide/connect_requests_context_info_input.htm "Input representation of the context that's associated with a sales transaction for a quote or an order.") | Context details that are created for a sales transaction. | Required if the graph property isn’t specified. | 63.0 |
-| graph | [Object Graph Input](https://developer.salesforce.com/docs/atlas.en-us.revenue_lifecycle_management_dev_guide.meta/revenue_lifecycle_management_dev_guide/connect_requests_object_graph_input.htm "Input representation of an sObject with a graph ID.") | 
-
-The sObject graph of the sales transaction to be ingested. You can perform create, update, or delete operations on objects from the Sales Transaction context definition by using this property. Additionally, perform create, update, or delete operations on custom objects and fields in your extended context definition.
-
-To create custom objects that are at the grandchildren level from a line item, you must create the hierarchy of objects until the grandchild object in the same request.
-
+| graph | [Object Graph Input](https://developer.salesforce.com/docs/atlas.en-us.revenue_lifecycle_management_dev_guide.meta/revenue_lifecycle_management_dev_guide/connect_requests_object_graph_input.htm "Input representation of an sObject with a graph ID.") | The sObject graph of the sales transaction to be ingested. You can perform create, update, or delete operations on objects from the Sales Transaction context definition by using this property. Additionally, perform create, update, or delete operations on custom objects and fields in your extended context definition.  
+  
+To create custom objects that are at the grandchildren level from a line item, you must create the hierarchy of objects until the grandchild object in the same request.  
+  
  | Required if the contextDetails property isn’t specified. | 63.0 |
-| groupRampAction | String | 
-
-Specifies the action ‌that you want to perform on group ramp segments. Additionally, you can also convert a non-ramped group into a ramped group. Valid values are:
-
-*   AddProducts—Specifies to add rampable products to group ramp segments.
-*   DeleteProducts—Specifies to delete ramped products.
-*   EditGroup—Specifies to convert a non-ramped group into a group ramp segment, or edit group ramp segment attributes such as name and description, except the start and end dates.
-*   EditRampSchedule—Specifies to edit details of the group ramp segments, including start and end dates.
-*   DeleteSegment—Specifies to delete the first or last segment in a group ramp schedule.
-*   ConvertToNonRampedGroup—Specifies to convert the first or last group ramp segment into a non-ramped group.
-
+| groupRampAction | String | Specifies the action ‌that you want to perform on group ramp segments. Additionally, you can also convert a non-ramped group into a ramped group. Valid values are:  
+  
+• AddProducts—Specifies to add rampable products to group ramp segments.  
+• DeleteProducts—Specifies to delete ramped products.  
+• EditGroup—Specifies to convert a non-ramped group into a group ramp segment, or edit group ramp segment attributes such as name and description, except the start and end dates.  
+• EditRampSchedule—Specifies to edit details of the group ramp segments, including start and end dates.  
+• DeleteSegment—Specifies to delete the first or last segment in a group ramp schedule.  
+• ConvertToNonRampedGroup—Specifies to convert the first or last group ramp segment into a non-ramped group.  
 To add or delete ramped line items from multiple group ramp segments, pass all the applicable values in the graph property. See [Group Ramp Action Input](https://developer.salesforce.com/docs/atlas.en-us.revenue_lifecycle_management_dev_guide.meta/revenue_lifecycle_management_dev_guide/connect_requests_group_ramp_action_input.htm "Understand the sample request to specify group ramp actions during initial sale.") to refer to examples. | Optional | 65.0 |
-| pricingPref | String | Pricing preference during the creation of a sales transaction. Valid values are:
-
-*   Force—Specifies to enforce pricing during the creation of sales transactions.
-*   Skip—Specifies to skip pricing during the creation of sales transactions.
-*   System—Specifies the system to determine whether a pricing calculation is required.
-
-The default value is System.
-
+| pricingPref | String | Pricing preference during the creation of a sales transaction. Valid values are: • Force—Specifies to enforce pricing during the creation of sales transactions.  
+• Skip—Specifies to skip pricing during the creation of sales transactions.  
+• System—Specifies the system to determine whether a pricing calculation is required.  
+The default value is System.  
+  
  | Optional | 63.0 |
 | taxPref | String | Specifies whether to execute or skip the tax calculation step for each sales transaction record. Valid value is Skip. If this value isn't specified, then tax calculation request is performed by default. | Optional | 65.0 |
 
