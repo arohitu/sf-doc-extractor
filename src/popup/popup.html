@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salesforce Doc Extractor</title>
+    <link rel="stylesheet" href="assets/styles/popup.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <img src="assets/icons/icon48.png" alt="Logo" class="logo">
+            <h1>SF Doc Extractor</h1>
+        </header>
+
+        <div id="status-container" class="status-box">
+            <div id="status-icon">👋</div>
+            <div id="status-text">Ready to extract</div>
+        </div>
+
+        <div class="actions">
+            <button id="btn-extract" class="btn btn-primary">
+                <span class="icon">📋</span> Copy Markdown
+            </button>
+            
+            <button id="btn-download" class="btn btn-secondary" disabled>
+                <span class="icon">⬇️</span> Download .md
+            </button>
+        </div>
+
+        <footer>
+            <small>v1.0 • optimized for AI</small>
+        </footer>
+    </div>
+
+    <!-- Webpack bundles the JS logic here -->
+    <script src="popup.bundle.js"></script>
+</body>
+</html>

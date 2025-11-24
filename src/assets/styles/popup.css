@@ -1,0 +1,129 @@
+/* Salesforce Lightning Design System inspired theme */
+:root {
+    --sf-blue: #0176d3;
+    --sf-blue-hover: #005fb2;
+    --bg-color: #ffffff;
+    --text-color: #181818;
+    --gray-bg: #f3f3f3;
+    --success-green: #2e844a;
+    --error-red: #ea001e;
+}
+
+body {
+    width: 320px;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+.container {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Header */
+header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid #e5e5e5;
+    padding-bottom: 12px;
+}
+
+.logo {
+    width: 32px;
+    height: 32px;
+}
+
+h1 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+    color: #091a3e;
+}
+
+/* Status Box */
+.status-box {
+    background-color: var(--gray-bg);
+    border-radius: 4px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    transition: all 0.3s ease;
+}
+
+#status-icon {
+    font-size: 18px;
+}
+
+/* Actions */
+.actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.btn {
+    border: none;
+    border-radius: 4px;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background-color 0.2s;
+}
+
+.btn-primary {
+    background-color: var(--sf-blue);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: var(--sf-blue-hover);
+}
+
+.btn-secondary {
+    background-color: white;
+    border: 1px solid #dddbda;
+    color: var(--sf-blue);
+}
+
+.btn-secondary:hover {
+    background-color: #f4f6f9;
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    filter: grayscale(100%);
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    color: #706e6b;
+    font-size: 11px;
+    margin-top: 4px;
+}
+
+/* Dynamic Status States */
+.status-box.success {
+    background-color: #eefdf3;
+    color: var(--success-green);
+    border: 1px solid #cbf4d8;
+}
+
+.status-box.error {
+    background-color: #fef0f3;
+    color: var(--error-red);
+    border: 1px solid #f9dadd;
+}
