@@ -1,495 +1,362 @@
 ---
-title: "Place Sales Transaction (POST) | Revenue Cloud Developer Guide | Salesforce Developers"
-url: "https://developer.salesforce.com/docs/atlas.en-us.revenue_lifecycle_management_dev_guide.meta/revenue_lifecycle_management_dev_guide/connect_resources_place_sales_transaction.htm"
-fetched_at: "2025-11-24T22:19:24.521Z"
+title: "AttributeDefinition | Revenue Cloud Developer Guide | Salesforce Developers"
+url: "https://developer.salesforce.com/docs/atlas.en-us.revenue_lifecycle_management_dev_guide.meta/revenue_lifecycle_management_dev_guide/sforce_api_objects_attributedefinition.htm"
+fetched_at: "2025-11-24T22:31:51.973Z"
 ---
 
-# Place Sales Transaction (POST)
+# AttributeDefinition
 
-Create a sales transaction, such as an order or a quote, with integrated pricing and configuration. Additionally, update an order or a quote, and insert and delete order or quote line items to calculate the estimated tax.
+Represents a product, asset, or object attribute, for example, a hardware specification or software detail. This object is available in API version 60.0 and later.
 
-You can also group order or quote line items based on location, work types, or departments, if groups are enabled for your org. Groups provide a visualization of the products to view large quotes.
+## Supported Calls
 
-You can add up to 1000 quote line items for a quote, and 1000 order products for an order. For complex flows that involve a large volume of records, ensure that the number of line items that are sent to this API are within this limit.
+create(), delete(), describeLayout(), describeSObjects(), getDeleted(), getUpdated(), query(), retrieve(), search(), undelete(), update(), upsert()
 
-Resource
+## Fields
 
-```
-/connect/rev/sales-transaction/actions/place
-```
+| Field | Details |
+| --- | --- |
+| Code | 
+Type
 
-Resource example
-
-```
-https://yourInstance.salesforce.com/services/data/v65.0/connect/rev/sales-transaction/actions/place
-```
-
-Available version
-
-63.0
-
-HTTP methods
-
-POST
-
-Request body for POST
-
-JSON example
-
-This is a sample request to create a sales transaction for a quote. This example also skips tax calculation by specifying a value for the optional taxPref property.
-
-```
-{
-  "pricingPref": "System",
-  "catalogRatesPref": "Skip",
-  "configurationPref": {
-    "configurationMethod": "Skip",
-    "configurationOptions": {
-      "validateProductCatalog": true,
-      "validateAmendRenewCancel": true,
-      "executeConfigurationRules": true,
-      "addDefaultConfiguration": true
-    }
-  },
-  "taxPref": "Skip",
-  "contextDetails": {
-    "contextId": "e055bb18-d4e8-41c3-881e-0132b9561708"
-  },
-  "graph": {
-    "graphId": "createQuote",
-    "records": [
-      {
-        "referenceId": "refQuote",
-        "record": {
-          "attributes": {
-            "method": "POST",
-            "type": "Quote"
-          },
-          "Name": "Quote_Acme",
-          "Pricebook2Id": "01sDU000000JvhbYAC"
-        }
-      },
-      {
-        "referenceId": "refQuoteLine0",
-        "record": {
-          "attributes": {
-            "type": "QuoteLineItem",
-            "method": "POST"
-          },
-          "QuoteId": "@{refQuote.id}",
-          "Product2Id": "01tDU000000F7b8YAC",
-          "PricebookEntryId": "01uDU000000fxt2YAA",
-          "UnitPrice": 100,
-          "Quantity": "1",
-          "StartDate": "2024-10-29",
-          "EndDate": "2025-03-01",
-          "PeriodBoundary": "Anniversary"
-        }
-      }
-    ]
-  }
-}
-```
-
-This sample request assigns a TransactionProcessingType record to a quote without any additional preferences. In this example, the TransactionType value for a record is set to a TransactionProcessingType record. See [TransactionProcessingType](https://developer.salesforce.com/docs/atlas.en-us.revenue_lifecycle_management_dev_guide.meta/revenue_lifecycle_management_dev_guide/tooling_api_objects_transactionprocessingtype.htm "Represents the settings to configure the processing constraints for a request.. This object is available in API version 63.0 and later.") tooling object for more details.
-
-```
-{
-  "pricingPref": "Force",
-  "contextDetails": {
-    "contextId": "f1c9e3e1c335f7959a88de09d3a867cc2b95e08709b99de8e2edeb8f5039e8ed",
-    "scope": "Session"
-  },
-  "graph": {
-    "graphId": "updateQuote",
-    "records": [
-      {
-        "referenceId": "refQuote",
-        "record": {
-          "attributes": {
-            "type": "Quote",
-            "method": "POST"
-          },
-          "OpportunityId": "006xx000001a2oWAAQ",
-          "PriceBook2Id": "01sxx0000005ptpAAA",
-          "TransactionType": "SkipPricingAndRunTax",
-          "Name": "Quote_No_Tax_System"
-        }
-      },
-      {
-        "referenceId": "refQLI1",
-        "record": {
-          "attributes": {
-            "type": "QuoteLineItem",
-            "method": "POST"
-          },
-          "QuoteId": "@{refQuote.id}",
-          "UnitPrice": 49.99,
-          "Product2Id": "01txx0000006i2aAAA",
-          "PricebookEntryId": "01uxx0000008yX0AAI",
-          "Quantity": 10
-        }
-      }
-    ]
-  }
-}
-```
-
-This is a sample request to insert, update, or delete a quote line item.
-
-```
-{
-  {
-  "pricingPref": "System",
-  "catalogRatesPref": "Skip",
-  "configurationPref": {
-    "configurationMethod": "Skip",
-    "configurationOptions": {
-      "validateProductCatalog": true,
-      "validateAmendRenewCancel": true,
-      "executeConfigurationRules": true,
-      "addDefaultConfiguration": true
-    }
-  },
-  "contextDetails": {
-    "contextId": "e055bb18-d4e8-41c3-881e-0132b9561708"
-  },
-  "graph": {
-    "graphId": "updateQuote",
-    "records": [
-      {
-        "referenceId": "refQuote",
-        "record": {
-          "attributes": {
-            "method": "PATCH",
-            "type": "Quote",
-            "id": "801xx000003GZ9bAAG"
-          }
-        }
-      },
-      {
-        "referenceId": "refQuoteLine0",
-        "record": {
-          "attributes": {
-            "type": "QuoteLineItem",
-            "method": "PATCH",
-            "id": "402xx000003KY5vJGH"
-          },
-          "Quantity": "5"
-        }
-      }
-    ]
-  }
-}
-```
-
-This is a sample request to define grouping of quote line items.
-
-```
-{
-  "pricingPref": "Force",
-  "catalogRatesPref": "Skip",
-  "configurationPref": {
-    "configurationMethod": "Skip",
-    "configurationOptions": {
-      "validateProductCatalog": true,
-      "validateAmendRenewCancel": true,
-      "executeConfigurationRules": true,
-      "addDefaultConfiguration": true
-    }
-  },
-  "contextDetails": {
-    "contextId": "e055bb18-d4e8-41c3-881e-0132b9561708"
-  },
-  "graph": {
-    "graphId": "groupQuoteLines",
-    "records": [
-      {
-        "referenceId": "refQuote",
-        "record": {
-          "attributes": {
-            "method": "PATCH",
-            "type": "Quote",
-            "id": "801xx000003GZ9bAAG"
-          }
-        }
-      },
-      {
-        "referenceId": "refQuoteLine0",
-        "record": {
-          "attributes": {
-            "type": "QuoteLineItem",
-            "method": "PATCH",
-            "id": "402xx000003KY5vJGH"
-          },
-          "QuoteLineGroupId": "@{refQuote.id}"
-        }
-      }
-    ]
-  }
-}
-```
-
-This is s a sample request for the initial grouping of the quote with all the quote lines assigned to the first group.
-
-```
-{
-  "pricingPref": "Force",
-  "catalogRatesPref": "Skip",
-  "graph": {
-    "graphId": "groupQuote",
-    "records": [
-      {
-        "referenceId": "refQuote",
-        "record": {
-          "attributes": {
-            "type": "Quote",
-            "method": "PATCH",
-            "id": "0Q0xx0000004CAmCAM"
-          }
-        }
-      },
-      {
-        "referenceId": "refQlg1",
-        "record": {
-          "attributes": {
-            "type": "QuoteLineGroup",
-            "method": "POST",
-            "action": "GroupAll"
-          },
-          "Name": "From PST API Group",
-          "QuoteId": "@{refQuote.id}"
-        }
-      }
-    ]
-  }
-}
-```
-
-This is a sample request to ungroup a quote but retain the quote lines.
-
-```
-{
-   "catalogRatesPref": "Skip",
-   "pricingPref": "Force",
-   "graph": {
-      "graphId": "ungroupQuote",
-      "records": [
-         {
-            "referenceId": "refQuote", 
-            "record": {
-               "attributes": {
-                  "type": "Quote",
-                  "method": "PATCH",
-                  "id":"0Q0xx0000004C99CAE"
-               },
-               "Name": "Grouped Quote with PST API"
-            }
-         },
-         {
-            "referenceId": "refQlg1",
-            "record": {
-               "attributes": {
-                  "type": "QuoteLineGroup",
-                  "method": "DELETE",
-                  "id": "402xx000003KY5vJGH",
-                  "action": "Ungroup"
-               }
-            }
-         }
-      ]
-   }
-}
-```
-
-This is a sample request to create a new group.
-
-```
-{
-   "catalogRatesPref": "Skip",
-   "pricingPref": "Force",
-   "graph": {
-      "graphId": "createGroup",
-      "records": [
-         {
-            "referenceId": "refQuote",
-            "record": {
-               "attributes": {
-                  "type": "Quote",
-                  "method": "PATCH",
-                  "id":"0Q0xx0000004C99CAE"
-               },
-               "Name": "Grouped Quote with PST API"
-            }
-         },
-         {
-            "referenceId": "refQlg1",
-            "record": {
-               "attributes": {
-                  "type": "QuoteLineGroup",
-                  "method": "POST"
-               },
-               "Name": "From PQ API Group",
-               "QuoteId": "@{refQuote.id}"
-            }
-         }
-      ]
-   }
-}
-```
-
-This example shows a sample request to delete a group.
-
-```
-{
-   "catalogRatesPref": "Skip",
-   "pricingPref": "Force",
-   "graph": {
-      "graphId": "deleteGroup",
-      "records": [
-         {
-            "referenceId": "refQuote",
-            "record": {
-               "attributes": {
-                  "type": "Quote",
-                  "method": "PATCH",
-                  "id":"0Q0xx0000004C99CAE"
-               },
-               "Name": "Grouped Quote with PST API"
-            }
-         },
-         {
-            "referenceId": "refQlg1",
-            "record": {
-               "attributes": {
-                  "type": "QuoteLineGroup",
-                  "method": "DELETE",
-                  "id": "402xx000003KY5vJGH",
-                  "action": "DeleteGroup"
-               }
-            }
-         }
-      ]
-   }
-}
-```
-
-This is a sample request to group order items based on criteria.
-
-```
-{
-    "catalogRatesPref": "Skip",
-    "pricingPref": "Force",
-    "graph": {
-        "graphId": "groupOrderItems",
-        "records": [
-            {
-                "referenceId": "refOrder",
-                "record": {
-                    "attributes": {
-                        "type": "Order",
-                        "method": "PATCH",
-                        "id": "0Q0xx0000004C99CAE"
-                    }
-                }
-            },
-            {
-                "referenceId": "refOlg1",
-                "record": {
-                    "attributes": {
-                        "type": "OrderItemGroup",
-                        "method": "POST",
-                        "action": "GroupBy",
-                        "criteria": {
-                            "BillingFrequency2": null
-                        }
-                    },
-                    "Name": "Billing Frequency: ",
-                    "OrderId": "@{refOrder.id}"
-                }
-            },
-            {
-                "referenceId": "g1",
-                "record": {
-                    "attributes": {
-                        "type": "OrderItemGroup",
-                        "method": "POST",
-                        "action": "GroupBy",
-                        "criteria": {
-                            "BillingFrequency2": "Monthly"
-                        }
-                    },
-                    "Name": "Billing Frequency: Monthly",
-                    "OrderId": "@{refOrder.id}"
-                }
-            }
-        ]
-    }
-}
-```
-
-This is a sample request to save changes to a ramp deal by using context ID. The context ID is returned by the Ramp Deal APIs. See [Create Ramp Deal (POST)](https://developer.salesforce.com/docs/atlas.en-us.258.0.revenue_lifecycle_management_dev_guide.meta/revenue_lifecycle_management_dev_guide/connect_resources_create_ramp_deal.htm "HTML (New Window)").
-
-```
-{
-  "pricingPref": "Force",
-  "contextDetails": {
-    "contextId": "f1c9e3e1c335f7959a88de09d3a867cc2b95e08709b99de8e2edeb8f5039e8ed",
-    "scope": "Session"
-  },
-  "graph": {
-    "graphId": "updateQuote",
-    "records": [
-      {
-        "referenceId": "refQuote",
-        "record": {
-          "attributes": {
-            "type": "Quote",
-            "method": "PATCH",
-            "id": "0Q0xx0000004DQ4CAM"
-          }
-        }
-      }
-    ]
-  }
-}
-```
-
-To see examples that specify actions to create ramp deals for groups, see [Group Ramp Action Input](https://developer.salesforce.com/docs/atlas.en-us.revenue_lifecycle_management_dev_guide.meta/revenue_lifecycle_management_dev_guide/connect_requests_group_ramp_action_input.htm "Understand the sample request to specify group ramp actions during initial sale.").
+string
 
 Properties
 
-| Name | Type | Description | Required or Optional | Available Version |
-| --- | --- | --- | --- | --- |
-| catalogRates​Pref | String | Rate card entries defined in the catalog that must be fetched for sales items with usage-based pricing during the creation of the sales transaction. Valid values are: • Fetch—Retrieves the rate card entries defined in the catalog for sales items during the creation of the sales transaction.  
-• Skip—Skips the retrieval of rate card entries for sales items during the creation of the sales transaction.The default value is Skip.  
-  
-  
-This property is available when the Usage-Based Selling feature is enabled. | Optional | 63.0 |
-| configuration​Pref | [Configurator Preference Input](https://developer.salesforce.com/docs/atlas.en-us.revenue_lifecycle_management_dev_guide.meta/revenue_lifecycle_management_dev_guide/connect_requests_configurator_preference_input.htm "Input representation of the configuration preference for the place sales transaction request.") | Configuration preference during the quote process. These preferences ensure that quotes are defined as per the requirement. | Optional | 63.0 |
-| contextDetails | [Context Input](https://developer.salesforce.com/docs/atlas.en-us.revenue_lifecycle_management_dev_guide.meta/revenue_lifecycle_management_dev_guide/connect_requests_context_info_input.htm "Input representation of the context that's associated with a sales transaction for a quote or an order.") | Context details that are created for a sales transaction. | Required if the graph property isn’t specified. | 63.0 |
-| graph | [Object Graph Input](https://developer.salesforce.com/docs/atlas.en-us.revenue_lifecycle_management_dev_guide.meta/revenue_lifecycle_management_dev_guide/connect_requests_object_graph_input.htm "Input representation of an sObject with a graph ID.") | The sObject graph of the sales transaction to be ingested. You can perform create, update, or delete operations on objects from the Sales Transaction context definition by using this property. Additionally, perform create, update, or delete operations on custom objects and fields in your extended context definition.  
-  
-To create custom objects that are at the grandchildren level from a line item, you must create the hierarchy of objects until the grandchild object in the same request.  
-  
- | Required if the contextDetails property isn’t specified. | 63.0 |
-| groupRampAction | String | Specifies the action ‌that you want to perform on group ramp segments. Additionally, you can also convert a non-ramped group into a ramped group. Valid values are:  
-  
-• AddProducts—Specifies to add rampable products to group ramp segments.  
-• DeleteProducts—Specifies to delete ramped products.  
-• EditGroup—Specifies to convert a non-ramped group into a group ramp segment, or edit group ramp segment attributes such as name and description, except the start and end dates.  
-• EditRampSchedule—Specifies to edit details of the group ramp segments, including start and end dates.  
-• DeleteSegment—Specifies to delete the first or last segment in a group ramp schedule.  
-• ConvertToNonRampedGroup—Specifies to convert the first or last group ramp segment into a non-ramped group.  
-To add or delete ramped line items from multiple group ramp segments, pass all the applicable values in the graph property. See [Group Ramp Action Input](https://developer.salesforce.com/docs/atlas.en-us.revenue_lifecycle_management_dev_guide.meta/revenue_lifecycle_management_dev_guide/connect_requests_group_ramp_action_input.htm "Understand the sample request to specify group ramp actions during initial sale.") to refer to examples. | Optional | 65.0 |
-| pricingPref | String | Pricing preference during the creation of a sales transaction. Valid values are: • Force—Specifies to enforce pricing during the creation of sales transactions.  
-• Skip—Specifies to skip pricing during the creation of sales transactions.  
-• System—Specifies the system to determine whether a pricing calculation is required.  
-The default value is System.  
-  
- | Optional | 63.0 |
-| taxPref | String | Specifies whether to execute or skip the tax calculation step for each sales transaction record. Valid value is Skip. If this value isn't specified, then tax calculation request is performed by default. | Optional | 65.0 |
+Create, Filter, Group, idLookup, Nillable, Sort, Update
 
-Response body for POST
+Description
 
-[Place Sales Transaction](https://developer.salesforce.com/docs/atlas.en-us.revenue_lifecycle_management_dev_guide.meta/revenue_lifecycle_management_dev_guide/connect_responses_place_sales_transaction_output.htm "Output representation of the request to create a sales transaction.")
+Code for the attribute definition. This field is unique within your organization.
+
+
+
+ |
+| CurrencyIsoCode | 
+
+Type
+
+picklist
+
+Properties
+
+Create, Defaulted on create, Filter, Group, Nillable, Restricted picklist, Sort, Update
+
+Description
+
+Available only if the multicurrency feature is enabled. Contains the ISO code for any currency allowed by the organization.
+
+Possible values are: • BHD—Bahraini Dinar<br>• JPY—Japanese Yen<br>• USD—U.S. Dollar<br>
+
+The default value is USD.
+
+
+
+ |
+| DataType | 
+
+Type
+
+picklist
+
+Properties
+
+Create, Filter, Group, Restricted picklist, Sort
+
+Description
+
+The data type of the attribute definition.
+
+Possible values are: • Checkbox<br>• Currency<br>• Date<br>• Datetime<br>• Multipicklist<br>• Number<br>• Percent<br>• Picklist<br>• Text<br>
+
+
+
+ |
+| DefaultHelpText | 
+
+Type
+
+textarea
+
+Properties
+
+Create, Nillable, Update
+
+Description
+
+The default help text for this attribute.
+
+
+
+ |
+| DefaultValue | 
+
+Type
+
+string
+
+Properties
+
+Create, Filter, Group, Nillable, Sort, Update
+
+Description
+
+The default value for this attribute.
+
+
+
+ |
+| Description | 
+
+Type
+
+textarea
+
+Properties
+
+Create, Nillable, Update
+
+Description
+
+Description of this attribute.
+
+
+
+ |
+| DeveloperName | 
+
+Type
+
+string
+
+Properties
+
+Create, Filter, Group, Sort
+
+Description
+
+The unique name of the attribute definition record.
+
+This name must begin with a letter and use only alphanumeric characters and underscores. It can't include spaces, end with an underscore, or have two consecutive underscores.
+
+
+
+ |
+| IsActive | 
+
+Type
+
+boolean
+
+Properties
+
+Create, Defaulted on create, Filter, Group, Sort, Update
+
+Description
+
+Indicates that the attribute definition is active. Active attributes definitions can be selected for products.
+
+The default value is false.
+
+
+
+ |
+| IsRequired | 
+
+Type
+
+boolean
+
+Properties
+
+Create, Defaulted on create, Filter, Group, Sort, Update
+
+Description
+
+Indicates whether the attribute definition is required for a product.
+
+The default value is false.
+
+
+
+ |
+| Label | 
+
+Type
+
+string
+
+Properties
+
+Create, Filter, Group, Sort, Update
+
+Description
+
+The label for the attribute.
+
+
+
+ |
+| LastReferencedDate | 
+
+Type
+
+dateTime
+
+Properties
+
+Filter, Nillable, Sort
+
+Description
+
+The date the attribute definition was last referenced.
+
+
+
+ |
+| LastViewedDate | 
+
+Type
+
+dateTime
+
+Properties
+
+Filter, Nillable, Sort
+
+Description
+
+The date the attribute definition was last viewed.
+
+
+
+ |
+| Name | 
+
+Type
+
+string
+
+Properties
+
+Create, Filter, Group, idLookup, Sort, Update
+
+Description
+
+The name of the attribute.
+
+
+
+ |
+| OwnerId | 
+
+Type
+
+reference
+
+Properties
+
+Create, Defaulted on create, Filter, Group, Sort, Update
+
+Description
+
+The owner of the attribute definition.
+
+This field is a polymorphic relationship field.
+
+Relationship Name
+
+Owner
+
+Relationship Type
+
+Lookup
+
+Refers To
+
+Group, User
+
+
+
+ |
+| PicklistId | 
+
+Type
+
+reference
+
+Properties
+
+Create, Filter, Group, Nillable, Sort
+
+Description
+
+The ID of the attribute picklist with the valid values for this attribute.
+
+This field is a relationship field.
+
+Relationship Name
+
+Picklist
+
+Relationship Type
+
+Lookup
+
+Refers To
+
+AttributePicklist
+
+
+
+ |
+| SourceSystemIdentifier | 
+
+Type
+
+string
+
+Properties
+
+Create, Filter, Group, Nillable, Sort, Update
+
+Description
+
+The identifier of the attribute definition in an external system.
+
+
+
+ |
+| ValueDescription | 
+
+Type
+
+textarea
+
+Properties
+
+Create, Nillable, Update
+
+Description
+
+The default value description for this attribute.
+
+
+
+ |
+
+## Associated Objects
+
+This object has the following associated objects. If the API version isn’t specified, they’re available in the same API versions as this object. Otherwise, they’re available in the specified API version and later.
+
+[AttributeDefinitionFeed](https://developer.salesforce.com/docs/atlas.en-us.revenue_lifecycle_management_dev_guide.meta/revenue_lifecycle_management_dev_guide/sforce_api_associated_objects_feed.htm "StandardObjectNameFeed is the model for all feed objects associated with standard objects. These objects represent the posts and feed-tracked changes of a standard object.")
+
+Feed tracking is available for the object.
+
+[AttributeDefinitionHistory](https://developer.salesforce.com/docs/atlas.en-us.revenue_lifecycle_management_dev_guide.meta/revenue_lifecycle_management_dev_guide/sforce_api_associated_objects_history.htm "StandardObjectNameHistory is the model for all history objects associated with standard objects. These objects represent the history of changes to the values in the fields of a standard object.")
+
+History is available for tracked fields of the object.
+
+[AttributeDefinitionShare](https://developer.salesforce.com/docs/atlas.en-us.revenue_lifecycle_management_dev_guide.meta/revenue_lifecycle_management_dev_guide/sforce_api_associated_objects_share.htm "StandardObjectNameShare is the model for all share objects associated with standard objects. These objects represent a sharing entry on the standard object.")
+
+Sharing is available for the object.
