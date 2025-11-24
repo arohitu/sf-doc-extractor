@@ -1,7 +1,6 @@
 /**
- * DomPiercer.js
- * Responsible for penetrating Shadow DOM boundaries and locating the main content.
- * Implements the 4-Tier Strategy defined in the Technical Design Document.
+ * DomPiercer.js (Enhanced V2)
+ * Implements recursive Shadow DOM piercing to find nested Salesforce components.
  */
 
 export class DomPiercer {
@@ -9,15 +8,11 @@ export class DomPiercer {
         this.logPrefix = '[SF-Doc-MD]';
     }
 
-    /**
-     * Main entry point. Tries all strategies in sequence.
-     * @returns {HTMLElement|null} The found content element or null.
-     */
     extract() {
-        // Tier 1: Salesforce Specific (Shadow DOM)
+        // Tier 1: Deep Recursive Shadow DOM Search (The Fix)
         const tier1 = this.attemptTier1();
         if (tier1) {
-            console.log(`${this.logPrefix} Success via Tier 1 (Shadow DOM)`);
+            console.log(`${this.logPrefix} Success via Tier 1 (Deep Shadow Scan)`);
             return tier1;
         }
 
@@ -35,66 +30,87 @@ export class DomPiercer {
             return tier3;
         }
 
-        // Tier 4: Body Fallback
-        console.log(`${this.logPrefix} Falling back to Tier 4 (Body)`);
         return document.body;
     }
 
     /**
-     * Strategy 1: Salesforce Deep Shadow DOM
-     * Targets: doc-xml-content -> shadowRoot -> doc-content -> shadowRoot -> .main-container
+     * Tier 1: Enhanced recursive search for 'doc-xml-content'
      */
     attemptTier1() {
         try {
-            const root = document.querySelector('doc-xml-content');
-            if (!root || !root.shadowRoot) return null;
+            // 1. Hunt for the 'doc-xml-content' tag anywhere in the Shadow Tree
+            const xmlContainer = this.findNodeDeep('doc-xml-content');
+            
+            if (!xmlContainer || !xmlContainer.shadowRoot) {
+                console.log(`${this.logPrefix} 'doc-xml-content' not found or has no shadowRoot.`);
+                return null;
+            }
 
-            const mid = root.shadowRoot.querySelector('doc-content');
-            if (!mid || !mid.shadowRoot) return null;
+            // 2. Go one level deeper to 'doc-content'
+            const docContent = xmlContainer.shadowRoot.querySelector('doc-content');
+            if (!docContent || !docContent.shadowRoot) {
+                console.log(`${this.logPrefix} 'doc-content' not found inside xml-content.`);
+                return null;
+            }
 
-            // Salesforce often uses .main-container or just 'main' inside the deep shadow
-            const container = mid.shadowRoot.querySelector('.main-container') ||
-                            mid.shadowRoot.querySelector('main') ||
-                            mid.shadowRoot.querySelector('[class*="main"]');
+            // 3. Grab the main container
+            const container = docContent.shadowRoot.querySelector('.main-container') ||
+                              docContent.shadowRoot.querySelector('main') ||
+                              docContent.shadowRoot.querySelector('[class*="main"]');
             
             return container || null;
         } catch (e) {
-            console.error(`${this.logPrefix} Tier 1 error:`, e);
+            console.error(`${this.logPrefix} Tier 1 Error:`, e);
             return null;
         }
     }
 
     /**
-     * Strategy 2: Standard Semantic Tags
-     * Good for standard HTML documentation sites.
+     * Recursive function to find a selector inside ANY nested shadow root.
+     * This is expensive but necessary for Salesforce.
      */
-    attemptTier2() {
-        const selectors = [
-            'main', 
-            '[role="main"]', 
-            '.content', 
-            '.article-content', 
-            '.help-content', 
-            'article', 
-            '.body'
-        ];
+    findNodeDeep(selector, root = document.body) {
+        // 1. Check direct children
+        const directMatch = root.querySelector(selector);
+        if (directMatch) return directMatch;
 
+        // 2. Iterate over ALL elements to find those with shadowRoots
+        // We use TreeWalker for performance over querySelectorAll('*')
+        const walker = document.createTreeWalker(
+            root === document.body ? document.body : root,
+            NodeFilter.SHOW_ELEMENT,
+            { acceptNode: (node) => node.shadowRoot ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP }
+        );
+
+        while (walker.nextNode()) {
+            const shadowHost = walker.currentNode;
+            const shadowRoot = shadowHost.shadowRoot;
+            
+            if (shadowRoot) {
+                // Recursive call into the shadow root
+                const found = this.findNodeDeep(selector, shadowRoot);
+                if (found) return found;
+            }
+        }
+
+        return null;
+    }
+
+    // --- Tiers 2 & 3 remain mostly the same, but let's tighten Tier 3 ---
+
+    attemptTier2() {
+        // Added 'dx-article' which is sometimes used
+        const selectors = ['main', '[role="main"]', '.article-content', 'dx-article'];
         for (const selector of selectors) {
             const el = document.querySelector(selector);
-            // Validation: Must have substantial text and not be a cookie banner
-            if (this.validateElement(el, 500)) {
-                return el;
-            }
+            if (this.validateElement(el, 500)) return el;
         }
         return null;
     }
 
-    /**
-     * Strategy 3: Heuristic Search (The "Smart" Fallback)
-     * Scans divs/articles for keywords like "Apex", "API", and high text density.
-     */
     attemptTier3() {
-        const candidates = document.querySelectorAll('div, article, section');
+        // Only look for distinct article-like containers to avoid grabbing sidebars
+        const candidates = document.querySelectorAll('article, section, [class*="content"]');
         let bestCandidate = null;
         let maxScore = 0;
 
@@ -104,47 +120,28 @@ export class DomPiercer {
             let score = 0;
             const text = el.textContent || '';
             
-            // Score based on length
             if (text.length > 1000) score += 50;
-            if (text.length < 200) continue; // Too short
+            if (text.length < 500) continue; 
 
-            // Score based on Salesforce/Tech keywords
             const lowerText = text.toLowerCase();
-            if (lowerText.includes('metadata api')) score += 20;
-            if (lowerText.includes('class')) score += 10;
-            if (lowerText.includes('apex')) score += 10;
-            if (lowerText.includes('xml')) score += 5;
-
-            // Penalty for UI noise
-            if (lowerText.includes('cookie')) score -= 100;
-            if (lowerText.includes('privacy policy')) score -= 50;
+            // Penalize sidebars/navs heavily
+            if (lowerText.includes('filter') && lowerText.includes('category')) score -= 50;
+            if (el.className.includes('nav') || el.className.includes('sidebar')) score -= 100;
 
             if (score > maxScore) {
                 maxScore = score;
                 bestCandidate = el;
             }
         }
-
         return maxScore > 40 ? bestCandidate : null;
     }
 
-    /**
-     * Helper: Validates if an element is worth extracting.
-     * @param {HTMLElement} el 
-     * @param {number} minLength 
-     */
     validateElement(el, minLength = 200) {
         if (!el || !el.textContent) return false;
-        
         const text = el.textContent.trim();
         if (text.length < minLength) return false;
-
         const lower = text.toLowerCase();
-        // Skip obvious non-content elements
-        if (lower.includes('accept all cookies') || lower.includes('privacy settings')) {
-            return false;
-        }
-
+        if (lower.includes('cookie') || lower.includes('privacy')) return false;
         return true;
     }
 }
