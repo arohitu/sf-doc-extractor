@@ -1,6 +1,6 @@
 /**
- * Sanitizer.js (V3 - Robust Table Flattening)
- * Prepares HTML for conversion.
+ * Sanitizer.js (V4 - Definition List Support)
+ * Now flattens <dl>, <dt>, <dd> to prevent table breakage on Object Reference pages.
  */
 
 export class Sanitizer {
@@ -17,7 +17,7 @@ export class Sanitizer {
         this.resolveLinks(clone);
         this.resolveImages(clone);
         
-        // Flatten tables LAST to ensure all other cleanup is done
+        // Flatten tables LAST
         this.flattenTables(clone);
 
         return clone.innerHTML;
@@ -35,47 +35,64 @@ export class Sanitizer {
         junkClasses.forEach(selector => root.querySelectorAll(selector).forEach(el => el.remove()));
     }
 
-    /**
-     * Aggressively flattens block elements inside tables to <br> tags.
-     * Uses reverse iteration to handle nested structures safely.
-     */
     flattenTables(root) {
         const cells = root.querySelectorAll('td, th');
         
         cells.forEach(cell => {
-            // 1. Convert Lists to pseudo-lists with <br>
-            // We query ALL list items first
+            // 1. Convert Lists (ul/ol/li)
             const listItems = Array.from(cell.querySelectorAll('li'));
             listItems.forEach(li => {
-                // Prepend bullet, append break
                 const span = document.createElement('span');
                 span.innerHTML = `&bull; ${li.innerHTML}<br>`;
                 li.replaceWith(span);
             });
-
-            // 2. Unwrap UL/OL tags (now empty of LI's or containing spans)
-            const lists = Array.from(cell.querySelectorAll('ul, ol'));
-            lists.forEach(list => {
+            
+            Array.from(cell.querySelectorAll('ul, ol')).forEach(list => {
                 const fragment = document.createDocumentFragment();
-                while (list.firstChild) {
-                    fragment.appendChild(list.firstChild);
-                }
+                while (list.firstChild) fragment.appendChild(list.firstChild);
                 list.replaceWith(fragment);
             });
 
-            // 3. Convert Block Elements (p, div, h*) to inline + <br>
+            // 2. CRITICAL FIX: Convert Definition Lists (dl, dt, dd)
+            // These are used heavily in "Field Details" columns
+            const definitions = Array.from(cell.querySelectorAll('dt, dd'));
+            definitions.forEach(node => {
+                const span = document.createElement('span');
+                
+                if (node.tagName === 'DT') {
+                    // Make terms (like "Type", "Properties") bold and add break
+                    span.innerHTML = `<strong>${node.innerHTML}:</strong> `;
+                } else {
+                    // Definitions get a break after
+                    span.innerHTML = `${node.innerHTML}<br>`;
+                }
+                node.replaceWith(span);
+            });
+
+            // Unwrap the <dl> wrapper
+            Array.from(cell.querySelectorAll('dl')).forEach(dl => {
+                const fragment = document.createDocumentFragment();
+                while (dl.firstChild) fragment.appendChild(dl.firstChild);
+                dl.replaceWith(fragment);
+            });
+
+            // 3. Convert Generic Blocks (p, div, etc)
             const blocks = Array.from(cell.querySelectorAll('p, div, h1, h2, h3, h4, h5, h6, blockquote, pre'));
             blocks.forEach(block => {
                 const span = document.createElement('span');
-                // Ensure space between blocks
-                span.innerHTML = `${block.innerHTML}<br><br>`; 
-                block.replaceWith(span);
+                const content = block.innerHTML.trim();
+                if (content) {
+                    // Use single break for compactness, preserve formatting
+                    span.innerHTML = `${content}<br>`;
+                    block.replaceWith(span);
+                } else {
+                    block.remove();
+                }
             });
 
-            // 4. Final Polish: Remove raw newlines inside the cell
-            // Turndown will see the <br> tags we added, but we must remove 
-            // the source code newlines to prevent it from generating \n characters.
-            cell.innerHTML = cell.innerHTML.replace(/(\r\n|\n|\r)/gm, ' ');
+            // 4. Remove ALL raw newlines/tabs to prevent Turndown confusion
+            // We rely 100% on our <br> tags for formatting now.
+            cell.innerHTML = cell.innerHTML.replace(/(\r\n|\n|\r|\t)/gm, ' ');
         });
     }
 
