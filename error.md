@@ -1,7 +1,7 @@
 ---
 title: "Place Sales Transaction (POST) | Revenue Cloud Developer Guide | Salesforce Developers"
 url: "https://developer.salesforce.com/docs/atlas.en-us.revenue_lifecycle_management_dev_guide.meta/revenue_lifecycle_management_dev_guide/connect_resources_place_sales_transaction.htm"
-fetched_at: "2025-11-24T22:15:28.402Z"
+fetched_at: "2025-11-24T22:19:24.521Z"
 ---
 
 # Place Sales Transaction (POST)
