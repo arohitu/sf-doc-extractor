@@ -3,6 +3,7 @@ const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   mode: 'production',
+  devtool: 'cheap-module-source-map',
   // Entry points: specific files webpack looks for to start bundling
   entry: {
     popup: './src/popup/popup.js',
