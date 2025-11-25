@@ -1,0 +1,22 @@
+C:\Work\Vscode\sf-doc-extractor> npm run build
+
+> sf-doc-md@1.0.0 build
+> webpack --mode production
+
+assets by path assets/ 29.2 KiB
+  asset assets/icons/Icon128.png 20.8 KiB [emitted] [from: src/assets/icons/Icon128.png] [copied]
+  asset assets/icons/Icon48.png 4.67 KiB [emitted] [from: src/assets/icons/Icon48.png] [copied]
+  asset assets/styles/popup.css 2.12 KiB [emitted] [from: src/assets/styles/popup.css] [copied]
+  asset assets/icons/Icon16.png 1.61 KiB [emitted] [from: src/assets/icons/Icon16.png] [copied]
+assets by path *.js 49.8 KiB
+  asset content.bundle.js 46.4 KiB [emitted] (name: content) 1 related asset
+  asset popup.bundle.js 3.28 KiB [emitted] (name: popup) 1 related asset
+  asset background.bundle.js 54 bytes [emitted] (name: background)
+asset popup.html 1.02 KiB [emitted] [from: src/popup/popup.html] [copied]
+asset manifest.json 635 bytes [emitted] [from: src/manifest.json] [copied]
+orphan modules 43.9 KiB [orphan] 5 modules
+cacheable modules 49.3 KiB
+  ./src/popup/popup.js 3.19 KiB [built] [code generated]
+  ./src/content/index.js + 5 modules 46.1 KiB [built] [code generated]
+  ./src/background/service_worker.js 1 bytes [built] [code generated]
+webpack 5.103.0 compiled successfully in 199 ms
