@@ -1,6 +1,6 @@
 /**
- * Sanitizer.js (V5 - Clean & Focused)
- * Removes Breadcrumbs ("You are here") and Footer links ("See Also")
+ * Sanitizer.js (V6 - SLDS & Breadcrumb Fix)
+ * Targets Salesforce Lightning Design System (SLDS) breadcrumbs and footers specifically.
  */
 
 export class Sanitizer {
@@ -31,40 +31,52 @@ export class Sanitizer {
         const junkTags = ['script', 'style', 'noscript', 'svg', 'iframe', 'button', 'input', 'form', 'nav'];
         junkTags.forEach(tag => root.querySelectorAll(tag).forEach(el => el.remove()));
 
-        // 2. Remove Classes (UI Noise)
-        const junkClasses = [
+        // 2. Remove Classes & IDs (UI Noise)
+        const junkSelectors = [
             // General UI
             '.checkbox-wrapper', '.feedback-widget', '.site-header', 
             '.site-footer', '.cookie-banner', '.on-page-navigation', 
             '.copy-icon', '[aria-hidden="true"]', '.edit-page',
             
-            // Salesforce Help Specifics (Breadcrumbs & Footer)
-            '.breadcrumbs',           // "You are here..."
-            '.breadcrumb',            // Variant
-            'div[role="navigation"]', // Accessibility Navs
-            '.related-links',         // "See Also" section
-            '.related-topics',        // Variant
-            '.topic-footer',          // Bottom links
-            '.doc-footer'             // Footer
+            // Salesforce Help Specifics (Breadcrumbs)
+            '.breadcrumbs',             // Legacy
+            '.slds-breadcrumb',         // SLDS standard
+            '#bread-crumb-label',       // "You are here" label
+            '[aria-labelledby="bread-crumb-label"]', // The container for the breadcrumb
+            
+            // Footers & Related Links
+            '.related-links',         
+            '.related-topics',        
+            '.topic-footer',          
+            '.doc-footer',
+            '.slds-docked-composer'   // Chat widgets
         ];
         
-        junkClasses.forEach(selector => {
+        junkSelectors.forEach(selector => {
             root.querySelectorAll(selector).forEach(el => el.remove());
         });
 
-        // 3. Smart Removal: "See Also" Headers that aren't in a container
-        // Sometimes "See Also" is just an <h4> followed by a <ul> without a wrapper class.
-        // We look for headers containing "See Also" and remove them + their next sibling list.
+        // 3. Smart Removal: "See Also" Headers
+        // Removes any header text that says "See Also" and the list immediately following it
         const headers = Array.from(root.querySelectorAll('h1, h2, h3, h4, h5, h6'));
         headers.forEach(header => {
             if (header.textContent.trim().toLowerCase() === 'see also') {
-                // Remove the header
-                header.remove();
-                // If the next element is a list, remove it too (it's the links)
-                if (header.nextElementSibling && (header.nextElementSibling.tagName === 'UL' || header.nextElementSibling.tagName === 'OL')) {
-                    header.nextElementSibling.remove();
+                const nextSibling = header.nextElementSibling;
+                header.remove(); // Remove the header
+                // Remove the list of links below it
+                if (nextSibling && (nextSibling.tagName === 'UL' || nextSibling.tagName === 'OL')) {
+                    nextSibling.remove();
                 }
             }
+        });
+        
+        // 4. Smart Removal: "You are here" text stragglers
+        // Sometimes the text node exists without a class. We look for paragraphs starting with "You are here"
+        const paragraphs = Array.from(root.querySelectorAll('p, div'));
+        paragraphs.forEach(p => {
+             if (p.textContent.trim().startsWith('You are here:')) {
+                 p.remove();
+             }
         });
     }
 
