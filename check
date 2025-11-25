@@ -1,7 +1,41 @@
-A justification for activeTab is required. This can be entered on the privacy practices tab.
-A justification for remote code use is required. This can be entered on the privacy practices tab.
-A justification for scripting is required. This can be entered on the privacy practices tab.
-The single purpose description is required. This can be entered on the privacy practices tab.
-To publish your item, you must certify that your data usage complies with our developer programme policies. You can certify this on the Privacy practices tab of the item edit page.
-You must provide a contact email before you can publish any item. Enter your contact email on the Account tab.
-You must verify your contact email before you can publish any item. Begin the verification process on the Account tab.
+
+
+This is a standard part of the Chrome Web Store submission process where you must explain *why* your extension needs the permissions we declared in the manifest.
+
+Here are the exact text snippets you can copy and paste into the **Privacy practices** tab fields.
+
+### 1. Single Purpose Description
+* **Field:** "Single Purpose Description"
+* **Copy/Paste:**
+    > This extension allows users to extract Salesforce documentation content from the active browser tab and convert it into clean, formatted Markdown for use with AI tools. It performs local DOM traversal to capture content hidden within Shadow DOMs and sanitizes the output.
+
+### 2. Permission Justification: `activeTab`
+* **Field:** "Justification for activeTab"
+* **Copy/Paste:**
+    > This permission is required to allow the extension to access the content of the current tab ONLY when the user explicitly clicks the extension icon. It ensures the extension does not run background processes or access pages without direct user consent.
+
+### 3. Permission Justification: `scripting`
+* **Field:** "Justification for scripting"
+* **Copy/Paste:**
+    > The scripting API is used to programmatically inject the content extraction script (which is bundled locally within the extension) into the active tab when the user clicks the action button. This script performs the necessary DOM parsing and HTML-to-Markdown conversion.
+
+### 4. Remote Code
+* **Question:** "Does your extension use remote code?"
+* **Your Action:** Select **NO**.
+    * *Why?* We used Webpack to bundle all our dependencies (`turndown`, etc.) into the local `dist/` files. We are NOT loading any scripts from external CDNs or servers. If you selected "Yes" by mistake, change it to "No" and the justification box will disappear.
+
+### 5. Data Usage
+* **Question:** "Do you collect any user data?"
+* **Your Action:** Select **No, I do not collect any user data**.
+    * *Why?* Your extension processes everything locally in the browser memory and saves it to the clipboard. It does not send data to any analytics server or database.
+
+### 6. Contact Email (The "Account" Error)
+* **Error:** "You must provide a contact email..."
+* **Your Action:**
+    1.  Look at the left sidebar menu of the Developer Dashboard.
+    2.  Click **Account** (usually at the very bottom).
+    3.  Enter your email address in the **Contact email** field.
+    4.  Click **Save**.
+    5.  Check your email inbox and click the verification link Google sends you.
+
+Once you fill these in and verify the email, the "Submit for Review" button will become active!
