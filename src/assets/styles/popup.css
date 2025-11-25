@@ -57,6 +57,10 @@ h1 {
     transition: all 0.3s ease;
 }
 
+.status-box.hidden {
+    display: none;
+}
+
 #status-icon {
     font-size: 18px;
 }
@@ -80,6 +84,7 @@ h1 {
     justify-content: center;
     gap: 8px;
     transition: background-color 0.2s;
+    width: 100%; /* Full width for the single button */
 }
 
 .btn-primary {
@@ -89,22 +94,6 @@ h1 {
 
 .btn-primary:hover {
     background-color: var(--sf-blue-hover);
-}
-
-.btn-secondary {
-    background-color: white;
-    border: 1px solid #dddbda;
-    color: var(--sf-blue);
-}
-
-.btn-secondary:hover {
-    background-color: #f4f6f9;
-}
-
-.btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    filter: grayscale(100%);
 }
 
 /* Footer */

@@ -5,12 +5,9 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     const btnExtract = document.getElementById('btn-extract');
-    const btnDownload = document.getElementById('btn-download');
     const statusText = document.getElementById('status-text');
     const statusIcon = document.getElementById('status-icon');
     const statusContainer = document.getElementById('status-container');
-
-    let extractedData = null;
 
     // 1. Extract Button Handler
     btnExtract.addEventListener('click', async () => {
@@ -31,11 +28,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (response && response.success) {
                 // Success!
-                extractedData = response.data;
-                await navigator.clipboard.writeText(extractedData);
-                
+                await navigator.clipboard.writeText(response.data);
                 updateStatus('success', 'Copied to Clipboard!');
-                btnDownload.disabled = false;
+                
+                // Optional: Close popup after success to feel faster?
+                // window.close(); 
             } else {
                 throw new Error(response.error || 'Unknown extraction failure');
             }
@@ -46,21 +43,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 2. Download Button Handler
-    btnDownload.addEventListener('click', () => {
-        if (!extractedData) return;
-        
-        const blob = new Blob([extractedData], { type: 'text/markdown' });
-        const url = URL.createObjectURL(blob);
-        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-        
-        chrome.downloads.download({
-            url: url,
-            filename: `salesforce-doc-${timestamp}.md`,
-            saveAs: true
-        });
-    });
-
     // --- Helpers ---
 
     async function getActiveTab() {
@@ -68,16 +50,10 @@ document.addEventListener('DOMContentLoaded', () => {
         return tab;
     }
 
-    /**
-     * Safely injects the content script.
-     * Checks if script is already running to avoid "redeclaration" errors.
-     */
     async function injectContentScript(tabId) {
         try {
-            // Ping to check if script exists
             await chrome.tabs.sendMessage(tabId, { action: 'PING' });
         } catch (e) {
-            // If ping fails, script isn't there. Inject it.
             console.log('Injecting content script...');
             await chrome.scripting.executeScript({
                 target: { tabId },
@@ -99,20 +75,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateStatus(type, message) {
+        // Show the container now that we have a message
+        statusContainer.classList.remove('hidden');
+        
         statusText.textContent = message;
         statusContainer.className = 'status-box'; // Reset classes
         
         if (type === 'loading') {
             statusIcon.textContent = '⏳';
-            statusIcon.className = 'spin'; // You could add a spin animation in CSS
+            statusIcon.className = 'spin';
         } else if (type === 'success') {
             statusIcon.textContent = '✅';
             statusContainer.classList.add('success');
         } else if (type === 'error') {
             statusIcon.textContent = '❌';
             statusContainer.classList.add('error');
-        } else {
-            statusIcon.textContent = '👋';
         }
     }
 });
