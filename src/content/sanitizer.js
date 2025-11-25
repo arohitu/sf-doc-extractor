@@ -1,6 +1,6 @@
 /**
- * Sanitizer.js (V4 - Definition List Support)
- * Now flattens <dl>, <dt>, <dd> to prevent table breakage on Object Reference pages.
+ * Sanitizer.js (V5 - Clean & Focused)
+ * Removes Breadcrumbs ("You are here") and Footer links ("See Also")
  */
 
 export class Sanitizer {
@@ -13,76 +13,98 @@ export class Sanitizer {
 
         const clone = element.cloneNode(true);
 
+        // 1. Remove Noise (Breadcrumbs, Footers, UI)
         this.removeJunk(clone);
+
+        // 2. Fix Links & Images
         this.resolveLinks(clone);
         this.resolveImages(clone);
         
-        // Flatten tables LAST
+        // 3. Flatten Tables (Definition Lists & Formatting)
         this.flattenTables(clone);
 
         return clone.innerHTML;
     }
 
     removeJunk(root) {
-        const junkTags = ['script', 'style', 'noscript', 'svg', 'iframe', 'button', 'input', 'form'];
+        // 1. Remove Tags
+        const junkTags = ['script', 'style', 'noscript', 'svg', 'iframe', 'button', 'input', 'form', 'nav'];
         junkTags.forEach(tag => root.querySelectorAll(tag).forEach(el => el.remove()));
 
+        // 2. Remove Classes (UI Noise)
         const junkClasses = [
+            // General UI
             '.checkbox-wrapper', '.feedback-widget', '.site-header', 
             '.site-footer', '.cookie-banner', '.on-page-navigation', 
-            '.copy-icon', '[aria-hidden="true"]', '.edit-page'
+            '.copy-icon', '[aria-hidden="true"]', '.edit-page',
+            
+            // Salesforce Help Specifics (Breadcrumbs & Footer)
+            '.breadcrumbs',           // "You are here..."
+            '.breadcrumb',            // Variant
+            'div[role="navigation"]', // Accessibility Navs
+            '.related-links',         // "See Also" section
+            '.related-topics',        // Variant
+            '.topic-footer',          // Bottom links
+            '.doc-footer'             // Footer
         ];
-        junkClasses.forEach(selector => root.querySelectorAll(selector).forEach(el => el.remove()));
+        
+        junkClasses.forEach(selector => {
+            root.querySelectorAll(selector).forEach(el => el.remove());
+        });
+
+        // 3. Smart Removal: "See Also" Headers that aren't in a container
+        // Sometimes "See Also" is just an <h4> followed by a <ul> without a wrapper class.
+        // We look for headers containing "See Also" and remove them + their next sibling list.
+        const headers = Array.from(root.querySelectorAll('h1, h2, h3, h4, h5, h6'));
+        headers.forEach(header => {
+            if (header.textContent.trim().toLowerCase() === 'see also') {
+                // Remove the header
+                header.remove();
+                // If the next element is a list, remove it too (it's the links)
+                if (header.nextElementSibling && (header.nextElementSibling.tagName === 'UL' || header.nextElementSibling.tagName === 'OL')) {
+                    header.nextElementSibling.remove();
+                }
+            }
+        });
     }
 
     flattenTables(root) {
         const cells = root.querySelectorAll('td, th');
         
         cells.forEach(cell => {
-            // 1. Convert Lists (ul/ol/li)
-            const listItems = Array.from(cell.querySelectorAll('li'));
-            listItems.forEach(li => {
+            // Lists
+            Array.from(cell.querySelectorAll('li')).forEach(li => {
                 const span = document.createElement('span');
                 span.innerHTML = `&bull; ${li.innerHTML}<br>`;
                 li.replaceWith(span);
             });
-            
             Array.from(cell.querySelectorAll('ul, ol')).forEach(list => {
-                const fragment = document.createDocumentFragment();
-                while (list.firstChild) fragment.appendChild(list.firstChild);
-                list.replaceWith(fragment);
+                const frag = document.createDocumentFragment();
+                while (list.firstChild) frag.appendChild(list.firstChild);
+                list.replaceWith(frag);
             });
 
-            // 2. CRITICAL FIX: Convert Definition Lists (dl, dt, dd)
-            // These are used heavily in "Field Details" columns
-            const definitions = Array.from(cell.querySelectorAll('dt, dd'));
-            definitions.forEach(node => {
+            // Definition Lists
+            Array.from(cell.querySelectorAll('dt, dd')).forEach(node => {
                 const span = document.createElement('span');
-                
                 if (node.tagName === 'DT') {
-                    // Make terms (like "Type", "Properties") bold and add break
                     span.innerHTML = `<strong>${node.innerHTML}:</strong> `;
                 } else {
-                    // Definitions get a break after
                     span.innerHTML = `${node.innerHTML}<br>`;
                 }
                 node.replaceWith(span);
             });
-
-            // Unwrap the <dl> wrapper
             Array.from(cell.querySelectorAll('dl')).forEach(dl => {
-                const fragment = document.createDocumentFragment();
-                while (dl.firstChild) fragment.appendChild(dl.firstChild);
-                dl.replaceWith(fragment);
+                const frag = document.createDocumentFragment();
+                while (dl.firstChild) frag.appendChild(dl.firstChild);
+                dl.replaceWith(frag);
             });
 
-            // 3. Convert Generic Blocks (p, div, etc)
-            const blocks = Array.from(cell.querySelectorAll('p, div, h1, h2, h3, h4, h5, h6, blockquote, pre'));
-            blocks.forEach(block => {
+            // Blocks
+            Array.from(cell.querySelectorAll('p, div, h1, h2, h3, h4, h5, h6, blockquote, pre')).forEach(block => {
                 const span = document.createElement('span');
                 const content = block.innerHTML.trim();
                 if (content) {
-                    // Use single break for compactness, preserve formatting
                     span.innerHTML = `${content}<br>`;
                     block.replaceWith(span);
                 } else {
@@ -90,8 +112,7 @@ export class Sanitizer {
                 }
             });
 
-            // 4. Remove ALL raw newlines/tabs to prevent Turndown confusion
-            // We rely 100% on our <br> tags for formatting now.
+            // Cleanup
             cell.innerHTML = cell.innerHTML.replace(/(\r\n|\n|\r|\t)/gm, ' ');
         });
     }
