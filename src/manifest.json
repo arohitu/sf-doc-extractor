@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "SF Doc Md",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Extracts Salesforce documentation from Shadow DOM to Markdown.",
   "permissions": [
     "activeTab",

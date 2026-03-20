@@ -1,6 +1,6 @@
 {
   "name": "sf-doc-md",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Extracts Salesforce documentation to Markdown for AI agents",
   "scripts": {
     "build": "webpack --mode production",
